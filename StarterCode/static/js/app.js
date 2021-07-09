@@ -1,0 +1,181 @@
+
+
+// view metadata for demo info
+function buildMetadata(sample) {
+
+    // use d3 to get the data from the samples.json file
+    d3.json("samples.json").then((data) => {
+        console.log(data);
+        var metadata = data.metadata;
+        console.log("##############")
+        console.log("Metadata Object:")
+        console.log(metadata);
+
+        // filter through metadata for each sample id
+        var filteredArray= metadata.filter(sampleObj => sampleObj.id == sample);
+        console.log("##############")
+        console.log(filteredArray);
+
+        // go into array to just grab the object
+        var resultObj= filteredArray[0]
+        console.log(resultObj);
+
+        var panel= d3.select("#sample-metadata");
+
+        // ensure the panel is clear before loading metadata
+        panel.html("");
+
+        // Using object.entries lets you grab the key and value pair in the object
+        // use chain technique to add text for each key value pair
+        Object.entries(resultObj).forEach(([key, value]) => {
+            panel.append("h5").text(`${key.toUpperCase()}: ${value}`);
+        });
+    });
+};
+
+
+function buildIdCharts(sample) {
+    // use d3 to get the data from the samples.json file
+    d3.json("samples.json").then((data) => {
+        // console.log(data);
+        var samplesData = data.samples;
+        console.log("##############")
+        console.log("Samples Object:")
+        console.log(samplesData);
+
+        // filter through metadata for each sample id
+        var filteredArray= samplesData.filter(sampleObj => sampleObj.id == sample);
+        console.log("##############")
+        console.log(filteredArray);
+
+        // go into array to just grab the object
+        var resultObj= filteredArray[0]
+        console.log(resultObj);
+        
+
+
+        // Sort the data by the sample_values
+        var sortedBySampleValues= filteredArray.sort((a, b) => b.sample_values - a.sample_values);
+        console.log(sortedBySampleValues)
+
+        // Checking the values for the bar chart
+        var resultValues= sortedBySampleValues[0].sample_values
+        // console.log(resultValues)
+
+        var resultIds= sortedBySampleValues[0].otu_ids
+        // console.log(resultIds)
+
+        var resultLabels= sortedBySampleValues[0].otu_labels
+        // console.log(resultLabels)
+        console.log("##############")
+
+
+
+        // // Slice the first 10 sample values for plotting
+        // slicedData = sortedBySampleValues[0].sample_values.slice(0, 10);
+        // console.log(slicedData);
+
+        // // Slice the first 10 otu ids for plotting
+        // slicedData2 = sortedBySampleValues[0].otu_ids.slice(0, 10);
+        // console.log(slicedData2);
+        // var test = slicedData2.map(String);
+        // console.log(test);
+
+        // // Slice the first 10 otu ids for plotting
+        // slicedData3 = sortedBySampleValues[0].otu_labels.slice(0, 10);
+        // console.log(slicedData3);
+
+        // use map to iterate over array and turn into string
+        var yticks= resultIds.slice(0, 10).map(otuID => `OTU ${otuID}`).reverse();
+        console.log(yticks);
+
+
+                // Trace1 for the Samples Data
+        var trace1 = {
+            x: resultValues.slice(0, 10).reverse(),
+            // y: (`OTU ${slicedData2}`),
+            y: yticks,
+            // y: ["OTU 1167", "rob", "sam", "bill", "jake", "sedric", "jake", "devin", "rodrigo", "jamiw"],
+            // y: slicedData2,
+            text: resultLabels.slice(0, 10).reverse(),
+            type: "bar",
+            orientation: "h"
+        };
+  
+        // data
+         var barData = [trace1];
+  
+        // Apply the group bar mode to the layout
+        var barLayout = {
+            title: ("Top 10 Bacteria Cultures Found").bold(),
+            margin: {
+                l: 100,
+                r: 100,
+                t: 40,
+                b: 100
+            }
+        };
+  
+        // Render the plot to the div tag with id "bar"
+        Plotly.newPlot("bar", barData, barLayout);
+
+        // Bubble Chart-- 
+
+        // Use otu_ids for the x values.
+        // Use sample_values for the y values.
+        // Use sample_values for the marker size.
+        // Use otu_ids for the marker colors.
+        // Use otu_labels for the text values.
+
+        var trace2 = {
+            x: resultIds,
+            y: resultValues,
+            text: resultLabels,
+            mode: 'markers',
+            marker: {
+                color: resultIds,
+                colorscale: 'Portland',
+                size: resultValues
+            }
+        };
+        
+        var bubbleData = [trace2];
+        
+        var bubbleLayout = {
+            title: ('Bacteria Cultures Per Sample').bold(),
+            showlegend: false,
+            height: 600,
+            width: 1200,
+            xaxis: {
+                title: {
+                  text: 'OTU ID',
+                  font: {
+                    family: 'Courier New, monospace',
+                    size: 18,
+                    color: 'black'
+                  }
+                }
+              }
+        };
+        
+        Plotly.newPlot('bubble', bubbleData, bubbleLayout);
+
+
+
+    });
+};
+
+
+
+
+
+
+
+
+// initialize page with init function
+function init() {
+    buildMetadata(940);
+    buildIdCharts(940);
+}
+
+init();
