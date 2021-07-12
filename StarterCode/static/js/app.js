@@ -20,6 +20,24 @@ function buildMetadata(sample) {
         var resultObj= filteredArray[0]
         console.log(resultObj);
 
+        var washFreq= resultObj.wfreq;
+        console.log(washFreq);
+
+        // build guage for wash freq
+        var gaugeData = [
+            {
+              domain: { x: [0, 1], y: [0, 1] },
+              value: washFreq,
+              title: { text: "Belly Button Washing Freq <br> Scrubs per Week" },
+              type: "indicator",
+              mode: "gauge+number",
+              gauge: { axis: { range: [null, 9] } }
+            }
+          ];
+          
+          var gaugeLayout = { width: 600, height: 400 };
+          Plotly.newPlot('gauge', gaugeData, gaugeLayout);
+
         var panel= d3.select("#sample-metadata");
 
         // ensure the panel is clear before loading metadata
@@ -167,13 +185,35 @@ function buildIdCharts(sample) {
 
 
 
-
+function optionChanged(nextSample) {
+    buildMetadata(nextSample);
+    buildIdCharts(nextSample);
+};
 
 
 
 
 // initialize page with init function
 function init() {
+
+    var pullDownMenu = d3.select("#selDataset");
+
+    d3.json("samples.json").then((data) => {
+        var names = data.names;
+        console.log(names);
+
+        names.forEach((sample) => {
+            pullDownMenu
+                .append("option")
+                .property("value", sample)
+                .text(sample);
+        });
+
+
+
+    });
+
+
     buildMetadata(940);
     buildIdCharts(940);
 }
