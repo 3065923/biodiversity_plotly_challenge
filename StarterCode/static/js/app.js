@@ -1,6 +1,7 @@
 
 
-// view metadata for demo info
+// view metadata for demographic info and guage
+// bc both utilize the metadata "data" from the large dataset
 function buildMetadata(sample) {
 
     // use d3 to get the data from the samples.json file
@@ -36,7 +37,11 @@ function buildMetadata(sample) {
           ];
           
           var gaugeLayout = { width: 600, height: 400 };
+          
           Plotly.newPlot('gauge', gaugeData, gaugeLayout);
+
+
+
 
         var panel= d3.select("#sample-metadata");
 
@@ -89,20 +94,6 @@ function buildIdCharts(sample) {
 
 
 
-        // // Slice the first 10 sample values for plotting
-        // slicedData = sortedBySampleValues[0].sample_values.slice(0, 10);
-        // console.log(slicedData);
-
-        // // Slice the first 10 otu ids for plotting
-        // slicedData2 = sortedBySampleValues[0].otu_ids.slice(0, 10);
-        // console.log(slicedData2);
-        // var test = slicedData2.map(String);
-        // console.log(test);
-
-        // // Slice the first 10 otu ids for plotting
-        // slicedData3 = sortedBySampleValues[0].otu_labels.slice(0, 10);
-        // console.log(slicedData3);
-
         // use map to iterate over array and turn into string
         var yticks= resultIds.slice(0, 10).map(otuID => `OTU ${otuID}`).reverse();
         console.log(yticks);
@@ -111,10 +102,7 @@ function buildIdCharts(sample) {
                 // Trace1 for the Samples Data
         var trace1 = {
             x: resultValues.slice(0, 10).reverse(),
-            // y: (`OTU ${slicedData2}`),
             y: yticks,
-            // y: ["OTU 1167", "rob", "sam", "bill", "jake", "sedric", "jake", "devin", "rodrigo", "jamiw"],
-            // y: slicedData2,
             text: resultLabels.slice(0, 10).reverse(),
             type: "bar",
             orientation: "h"
@@ -184,13 +172,10 @@ function buildIdCharts(sample) {
 };
 
 
-
 function optionChanged(nextSample) {
     buildMetadata(nextSample);
     buildIdCharts(nextSample);
 };
-
-
 
 
 // initialize page with init function
@@ -209,8 +194,6 @@ function init() {
                 .text(sample);
         });
 
-
-
     });
 
 
@@ -218,4 +201,6 @@ function init() {
     buildIdCharts(940);
 }
 
+
+// initialize the page
 init();
